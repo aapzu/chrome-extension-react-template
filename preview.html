@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    .row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .col {
+      width: 50%;
+      padding: 16px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    iframe,
+    #root {
+      width: 100%;
+      flex: 1;
+      border: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="row">
+    <div class="col">
+      <iframe id="popup" src="popup.html"></iframe>
+    </div>
+    <div class="col">
+      <div id="root"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/content.tsx"></script>
+
+
+  <!-- This is a hack to run the background script in a separate context-->
+  <iframe id="background" src="/src/background.ts" style="display: none;"></iframe>
+  <script>
+    const iframe = document.getElementById('background');
+    iframe.addEventListener('load', () => {
+      const scriptSource = iframe.src;
+      const scriptTag = document.createElement('script');
+      scriptTag.src = scriptSource;
+      iframe.onload = null;
+      iframe.src = "about:blank";
+      setTimeout(() => {
+        iframe.contentDocument.body.appendChild(scriptTag);
+      }, 100);
+    }, { once: true });
+  </script>
+</body>
+
+</html>
